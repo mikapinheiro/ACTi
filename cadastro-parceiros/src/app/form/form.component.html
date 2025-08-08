@@ -1,0 +1,162 @@
+<div class="form-wrapper">
+  <!-- Mensagem de sucesso -->
+  <div *ngIf="sucesso" class="alert alert-success">{{ sucesso }}</div>
+  <!-- Mensagem de erro -->
+  <div *ngIf="erro" class="alert alert-danger">{{ erro }}</div>
+
+  <form [formGroup]="parceiroForm" (ngSubmit)="onSubmit()">
+    <!-- Tipo de Parceiro -->
+    <div class="form-group">
+      <label>Tipo de Parceiro *</label>
+      <select formControlName="tipoParceiro" [ngClass]="{ 'is-invalid': formControlInvalido('tipoParceiro') }">
+        <option value="">Selecione...</option>
+        <option>Agente Logística</option>
+        <option>Cliente</option>
+        <option>Despachante</option>
+        <option>Fornecedor</option>
+      </select>
+      <div *ngIf="formControlInvalido('tipoParceiro')" class="invalid-feedback">Selecione o tipo de parceiro.</div>
+    </div>
+
+    <!-- Personalidade -->
+    <div class="form-group">
+      <label>Personalidade *</label>
+      <select formControlName="personalidade" [ngClass]="{ 'is-invalid': formControlInvalido('personalidade') }">
+        <option value="">Selecione...</option>
+        <option>Física</option>
+        <option>Jurídica</option>
+      </select>
+      <div *ngIf="formControlInvalido('personalidade')" class="invalid-feedback">Selecione a personalidade.</div>
+    </div>
+
+    <!-- Razão Social / Nome Fantasia -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Razão Social *</label>
+        <input type="text" formControlName="razaoSocial" [ngClass]="{ 'is-invalid': formControlInvalido('razaoSocial') }" />
+        <div *ngIf="formControlInvalido('razaoSocial')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>Nome Fantasia *</label>
+        <input type="text" formControlName="nomeFantasia" [ngClass]="{ 'is-invalid': formControlInvalido('nomeFantasia') }" />
+        <div *ngIf="formControlInvalido('nomeFantasia')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- CNPJ/CPF -->
+    <div class="form-group">
+      <label>CNPJ/CPF *</label>
+      <input
+        type="text"
+        formControlName="cnpjCpf"
+        [ngClass]="{ 'is-invalid': formControlInvalido('cnpjCpf') }"
+        [mask]="parceiroForm.get('personalidade')?.value === 'Física' ? '000.000.000-00' : '00.000.000/0000-00'"
+        [dropSpecialCharacters]="false"
+        (blur)="consultarCNPJ()"
+      />
+      <div *ngIf="parceiroForm.get('cnpjCpf')?.errors?.['cpfInvalido']" class="invalid-feedback">CPF inválido.</div>
+      <div *ngIf="parceiroForm.get('cnpjCpf')?.errors?.['cnpjInvalido']" class="invalid-feedback">CNPJ inválido.</div>
+      <div *ngIf="parceiroForm.get('cnpjCpf')?.errors?.['formatoInvalido']" class="invalid-feedback">Formato inválido.</div>
+      <div *ngIf="parceiroForm.get('cnpjCpf')?.errors?.['required']" class="invalid-feedback">Campo obrigatório.</div>
+    </div>
+
+    <!-- Segmento / Categoria -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Segmento *</label>
+        <input type="text" formControlName="segmento" [ngClass]="{ 'is-invalid': formControlInvalido('segmento') }" />
+        <div *ngIf="formControlInvalido('segmento')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>Categoria *</label>
+        <input type="text" formControlName="categoria" [ngClass]="{ 'is-invalid': formControlInvalido('categoria') }" />
+        <div *ngIf="formControlInvalido('categoria')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- CEP / Logradouro -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>CEP *</label>
+        <input type="text" formControlName="cep" mask="00000-000" [ngClass]="{ 'is-invalid': formControlInvalido('cep') }" (blur)="consultarCEP()" />
+        <div *ngIf="formControlInvalido('cep')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>Logradouro *</label>
+        <input type="text" formControlName="logradouro" [ngClass]="{ 'is-invalid': formControlInvalido('logradouro') }" />
+        <div *ngIf="formControlInvalido('logradouro')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- Número / Complemento / Bairro -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Número *</label>
+        <input type="number" formControlName="numero" [ngClass]="{ 'is-invalid': formControlInvalido('numero') }" />
+        <div *ngIf="formControlInvalido('numero')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>Complemento</label>
+        <input type="text" formControlName="complemento" />
+      </div>
+      <div class="form-group">
+        <label>Bairro *</label>
+        <input type="text" formControlName="bairro" [ngClass]="{ 'is-invalid': formControlInvalido('bairro') }" />
+        <div *ngIf="formControlInvalido('bairro')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- Município / UF -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Município *</label>
+        <input type="text" formControlName="municipio" [ngClass]="{ 'is-invalid': formControlInvalido('municipio') }" />
+        <div *ngIf="formControlInvalido('municipio')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>UF *</label>
+        <input type="text" formControlName="uf" [ngClass]="{ 'is-invalid': formControlInvalido('uf') }" />
+        <div *ngIf="formControlInvalido('uf')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- País -->
+    <div class="form-group">
+      <label>País *</label>
+      <input type="text" formControlName="pais" [ngClass]="{ 'is-invalid': formControlInvalido('pais') }" />
+      <div *ngIf="formControlInvalido('pais')" class="invalid-feedback">Campo obrigatório.</div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>Email *</label>
+      <input type="email" formControlName="email" [ngClass]="{ 'is-invalid': formControlInvalido('email') }" />
+      <div *ngIf="formControlInvalido('email')" class="invalid-feedback">E-mail inválido.</div>
+    </div>
+
+    <!-- Telefone / Celular -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Telefone *</label>
+        <input type="text" formControlName="telefone" mask="(00) 0000-0000" [ngClass]="{ 'is-invalid': formControlInvalido('telefone') }" />
+        <div *ngIf="formControlInvalido('telefone')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+      <div class="form-group">
+        <label>Celular *</label>
+        <input type="text" formControlName="celular" mask="(00) 00000-0000" [ngClass]="{ 'is-invalid': formControlInvalido('celular') }" />
+        <div *ngIf="formControlInvalido('celular')" class="invalid-feedback">Campo obrigatório.</div>
+      </div>
+    </div>
+
+    <!-- Observação -->
+    <div class="form-group">
+      <label>Observação</label>
+      <textarea formControlName="observacao"></textarea>
+    </div>
+
+    <!-- Botão -->
+    <div class="form-footer">
+      <button type="submit">ENVIAR</button>
+    </div>
+  </form>
+</div>

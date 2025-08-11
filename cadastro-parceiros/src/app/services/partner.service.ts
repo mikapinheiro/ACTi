@@ -1,39 +1,50 @@
-// Serviço Angular responsável por intermediar a comunicação entre o front-end e o back-end da API de partners.
-
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root' // Torna o serviço disponível para toda a aplicação
-})
+export interface ViaCepResponse {
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string; // município
+  uf: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class PartnerService {
+private base_url = 'http://localhost:8080/partners';
 
-  private apiUrl = 'http://localhost:8080/partners/'; // URL base da API
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Envia os dados do parceiro para o back-end via método POST.
-   * @param parceiro Objeto com os dados do formulário preenchido
-   * @returns Observable com a resposta da API
-   */
-  postParceiro(parceiro: any): Observable<any> {
-    return this.http.post(this.apiUrl, parceiro)
-      .pipe(
-        catchError(this.handleError) // Trata possíveis erros
-      );
+  consultarCep(cep: string): Observable<ViaCepResponse> {
+    const onlyDigits = cep.replace(/\D/g, '');
+    return this.http.get<ViaCepResponse>(`https://viacep.com.br/ws/${onlyDigits}/json/`);
   }
 
-  /**
-   * Função para tratar erros da requisição HTTP.
-   * Pode ser expandida para exibir mensagens específicas por tipo de erro.
-   * @param error Objeto de erro retornado pelo HttpClient
-   * @returns Observable com erro tratado
-   */
-  private handleError(error: HttpErrorResponse) {
-    console.error('Erro ao comunicar com o servidor:', error);
-    return throwError(() => new Error('Erro ao comunicar com o servidor. Por favor, tente novamente.'));
+  consultarCNPJ(cnpj: string): Observable<any> {
+    const onlyDigits = cnpj.replace(/\D/g, '');
+    return this.http.get<any>(`https://www.receitaws.com.br/v1/cnpj/${onlyDigits}`);
+  }
+
+  cadastrarParceiro(payload: any): Observable<any> {
+    return this.http.post(`${this.base_url}/parceiros`, payload);
+  }
+
+  getMinimumPartners(): Observable<any> {
+    return this.http.get(`${this.base_url}/minimum`);
+  }
+
+  getFullPartners(): Observable<any> {
+    return this.http.get(`${this.base_url}/full`);
+  }
+
+  getPartnerById(id: string): Observable<any> {
+    return this.http.get(`${this.base_url}/byid/${id}`);
+  }
+
+  createPartner(data: any): Observable<any> {
+    return this.http.post(`${this.base_url}/`, data);
   }
 }

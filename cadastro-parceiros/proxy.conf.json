@@ -1,0 +1,7 @@
+{
+  "/partners": {
+    "target": "base_url",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

@@ -1,0 +1,372 @@
+<div class="texto-fixo">ACTi - Tecnologia da Informação</div>
+
+<div class="background-circle circle-orange-large"></div>
+<div class="background-circle circle-orange-small"></div>
+<div class="background-circle circle-gray"></div>
+
+<div class="form-container">
+  <form [formGroup]="partnerForm" (ngSubmit)="onSubmit()" novalidate>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Tipo de Parceiro
+          <span class="required">*</span>
+        </label>
+        <select formControlName="tipo"
+                [class.loading]="isLoading"
+                aria-describedby="tipo-error">
+          <option value="">Selecione o tipo de parceiro</option>
+          <option value="agente">Agente Logística</option>
+          <option value="cliente">Cliente</option>
+          <option value="despachante">Despachante</option>
+          <option value="fornecedor">Fornecedor</option>
+        </select>
+        <div id="tipoParceiro-error" class="error" *ngIf="isInvalid('tipo')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>
+          Personalidade
+          <span class="required">*</span>
+        </label>
+        <select formControlName="tipoPersona"
+                aria-describedby="tipopersona-error">
+          <option value="">Selecione a personalidade</option>
+          <option value="fisica">Física</option>
+          <option value="juridica">Jurídica</option>
+        </select>
+        <div id="tipoPersona-error" class="error" *ngIf="isInvalid('tipoPersona')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Razão Social
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="razaoSocial"
+               placeholder="Digite a razão social"
+               autocomplete="organization"
+               aria-describedby="razaoSocial-error" />
+        <div id="razaoSocial-error" class="error" *ngIf="isInvalid('razaoSocial')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>
+          Nome Fantasia
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="nomeFantasia"
+               placeholder="Digite o nome fantasia"
+               autocomplete="organization"
+               aria-describedby="nomeFantasia-error" />
+        <div id="nomeFantasia-error" class="error" *ngIf="isInvalid('nomeFantasia')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          CPF/CNPJ
+          <span class="required">*</span>
+        </label>
+        <div class="input-with-icon">
+          <input type="text"
+                 formControlName="cpfCnpj"
+                 placeholder="Digite apenas números"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 autocomplete="off"
+                 [mask]="cpfCnpjMask"
+                 (blur)="validateDocumento()"
+                 [class.loading]="isValidatingDoc"
+                 aria-describedby="cpfCnpj-error" />
+
+          <span *ngIf="!docError && partnerForm.get('cpfCnpj')?.valid && cpfCnpjValido" class="check-icon">✅</span>
+        </div>
+
+        <div id="cpfCnpj-error" class="doc-error" *ngIf="docError">
+          {{ docError }}
+        </div>
+        <div class="error" *ngIf="isInvalid('cpfCnpj') && !docError">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Segmento
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="segmento"
+               placeholder="Ex: Logística, Comércio, Indústria"
+               aria-describedby="segmento-error" />
+        <div id="segmento-error" class="error" *ngIf="isInvalid('segmento')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>
+          Categoria
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="categoria"
+               placeholder="Digite a categoria"
+               aria-describedby="categoria-error" />
+        <div id="categoria-error" class="error" *ngIf="isInvalid('categoria')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          CEP
+          <span class="required">*</span>
+        </label>
+        <input type="tel"
+               formControlName="cep"
+               placeholder="00000-000"
+               pattern="[0-9]*"
+               inputmode="numeric"
+               maxlength="8"
+               autocomplete="postal-code"
+               (blur)="consultarCEP()"
+               (keypress)="permitirApenasNumeros($event)"
+               [class.loading]="isValidatingCep"
+               aria-describedby="cep-error" />
+        <div id="cep-error" class="cep-error" *ngIf="cepError">
+          {{ cepError }}
+        </div>
+        <div class="error" *ngIf="isInvalid('cep') && !cepError">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col full">
+        <label>
+          Logradouro
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="logradouro"
+               placeholder="Rua, Avenida, Alameda..."
+               autocomplete="address-line1"
+               aria-describedby="logradouro-error" />
+        <div id="logradouro-error" class="error" *ngIf="isInvalid('logradouro')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Número
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="numero"
+               placeholder="123"
+               aria-describedby="numero-error" />
+        <div id="numero-error" class="error" *ngIf="isInvalid('numero')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>Complemento</label>
+        <input type="text"
+               formControlName="complemento"
+               placeholder="Apto, Sala, Bloco... (opcional)"
+               autocomplete="address-line2" />
+      </div>
+
+      <div class="col">
+        <label>
+          Bairro
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="bairro"
+               placeholder="Nome do bairro"
+               autocomplete="address-level2"
+               aria-describedby="bairro-error" />
+        <div id="bairro-error" class="error" *ngIf="isInvalid('bairro')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Cidade
+          <span class="required">*</span>
+        </label>
+        <input type="text"
+               formControlName="municipio"
+               placeholder="Nome da cidade"
+               autocomplete="address-level2"
+               aria-describedby="municipio-error" />
+        <div id="municipio-error" class="error" *ngIf="isInvalid('municipio')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>
+          Estado (UF)
+          <span class="required">*</span>
+        </label>
+        <select formControlName="uf"
+                autocomplete="address-level1"
+                aria-describedby="uf-error">
+          <option value="">Selecione o estado</option>
+          <option *ngFor="let estado of estados" [value]="estado.sigla">
+            {{ estado.nome }} ({{ estado.sigla }})
+          </option>
+        </select>
+        <div id="uf-error" class="error" *ngIf="isInvalid('uf')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          País
+          <span class="required">*</span>
+        </label>
+        <select formControlName="pais"
+                autocomplete="country-name"
+                aria-describedby="pais-error">
+          <option *ngFor="let pais of paises" [value]="pais">{{ pais }}</option>
+        </select>
+        <div id="pais-error" class="error" *ngIf="isInvalid('pais')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          E-mail
+          <span class="required">*</span>
+        </label>
+        <input type="email"
+               formControlName="email"
+               placeholder="exemplo@empresa.com.br"
+               autocomplete="email"
+               aria-describedby="email-error" />
+        <div id="email-error" class="error" *ngIf="isInvalid('email')">
+          <span *ngIf="partnerForm.get('email')?.errors?.['required']">Campo obrigatório</span>
+          <span *ngIf="partnerForm.get('email')?.errors?.['email']">E-mail inválido</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>
+          Telefone
+          <span class="required">*</span>
+        </label>
+        <input type="tel"
+               formControlName="telefone"
+               placeholder="(11) 3000-0000"
+               mask="(00) 0000-0000"
+               pattern="[0-9]*"
+               inputmode="numeric"
+               autocomplete="tel"
+               (keypress)="permitirApenasNumeros($event)"
+               aria-describedby="telefone-error" />
+        <div id="telefone-error" class="error" *ngIf="isInvalid('telefone')">
+          Campo obrigatório
+        </div>
+      </div>
+
+      <div class="col">
+        <label>
+          Celular
+          <span class="required">*</span>
+        </label>
+        <input type="tel"
+               formControlName="celular"
+               placeholder="(11) 99999-9999"
+               mask="(00) 0000-0000||(00) 00000-0000"
+               pattern="[0-9]*"
+               inputmode="numeric"
+               autocomplete="tel"
+               (keypress)="permitirApenasNumeros($event)"
+               aria-describedby="celular-error" />
+        <div id="celular-error" class="error" *ngIf="isInvalid('celular')">
+          Campo obrigatório
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col full">
+        <label>Observação</label>
+        <textarea formControlName="observacao"
+                  placeholder="Informações adicionais sobre o parceiro (opcional)"
+                  rows="4"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-container">
+      <button type="submit"
+              [disabled]="partnerForm.invalid || isSubmitting"
+              [class.loading]="isSubmitting"
+              aria-describedby="submit-help">
+        <span *ngIf="!isSubmitting">Cadastrar Parceiro</span>
+        <span *ngIf="isSubmitting">Enviando...</span>
+      </button>
+      <div id="submit-help" class="sr-only">
+        Clique para enviar o formulário de cadastro
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="sr-only">
+  <p>Formulário de cadastro de parceiros comerciais</p>
+  <p>Campos marcados com asterisco (*) são obrigatórios</p>
+</div>
+
+<style>
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>

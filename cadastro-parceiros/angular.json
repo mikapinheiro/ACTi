@@ -13,9 +13,11 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts", 
-            "polyfills": ["zone.js"], 
-            "tsConfig": "tsconfig.app.json", 
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
@@ -23,10 +25,8 @@
               }
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css", 
-              "src/styles.css" 
-            ],
-            "scripts": []
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
@@ -45,14 +45,17 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false, 
-              "extractLicenses": false, 
-              "sourceMap": true 
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
-          "defaultConfiguration": "production" 
+          "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+          "proxyConfig": "proxy.conf.json"
+        },
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
@@ -62,7 +65,7 @@
               "buildTarget": "cadastro-parceiros:build:development"
             }
           },
-          "defaultConfiguration": "development" 
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
@@ -70,21 +73,24 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": [
+              "src/styles.css"
+            ]
           }
         }
       }
     }
-  },
-  "cli": {
-    "analytics": false
   }
 }

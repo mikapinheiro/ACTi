@@ -161,7 +161,6 @@ export class PartnerFormComponent implements OnInit, OnDestroy {
 
   private initializeForm(): void {
     this.partnerForm = this.fb.group({
-      // CORREÇÃO: Nomes dos controles ajustados para 'tipo' e 'tipoPersona'
       tipo: ['', [Validators.required]],
       tipoPersona: ['', [Validators.required]],
       razaoSocial: ['', [Validators.required, this.customValidators.minLength(2)]],
@@ -209,7 +208,6 @@ export class PartnerFormComponent implements OnInit, OnDestroy {
         }
       });
 
-    // CORREÇÃO: Subscrição ajustada para o nome do campo correto 'tipoPersona'
     this.partnerForm.get('tipoPersona')?.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(value => {
@@ -358,6 +356,10 @@ export class PartnerFormComponent implements OnInit, OnDestroy {
           return;
         }
 
+        // REMOVENDO VERIFICAÇÃO DE CNPJ ATIVO
+        // A lógica abaixo faz uma consulta à API e verifica se o CNPJ está ativo.
+        // Ao remover este bloco, o formulário validará apenas o formato do CNPJ.
+        /*
         try {
           const data = await this.consultarCNPJ(doc);
           if (data) {
@@ -367,6 +369,7 @@ export class PartnerFormComponent implements OnInit, OnDestroy {
           this.docError = 'CNPJ não encontrado ou inativo';
           console.warn('Erro ao consultar CNPJ:', error);
         }
+        */
       }
     } finally {
       this.isValidatingDoc = false;
@@ -385,10 +388,15 @@ export class PartnerFormComponent implements OnInit, OnDestroy {
   }
 
   private preencherDadosCNPJ(data: ApiCnpjResponse): void {
+    // REMOVENDO VERIFICAÇÃO DE CNPJ ATIVO
+    // Esta linha verifica o status do CNPJ na Receita Federal.
+    // Ao comentar, o formulário não irá mais exibir o erro de "inativo".
+    /*
     if (data.situacao !== 'ATIVA') {
       this.docError = 'CNPJ está inativo';
       return;
     }
+    */
 
     this.partnerForm.patchValue({
       razaoSocial: data.razao_social || '',

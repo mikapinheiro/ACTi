@@ -337,7 +337,7 @@ button {
   position: relative;
   overflow: hidden;
   min-width: 200px;
-  color: var(--acti-white); /* <<-- A linha que garante que o texto do botão NÃO-loading seja branco */
+  color: var(--acti-white);
   
   &::before {
     content: '';
